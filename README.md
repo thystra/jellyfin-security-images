@@ -9,7 +9,7 @@ The repository publishes a small set of explicit, versioned images. Each tag ide
 For standard Jellyfin 10.11.11 on `linux/amd64` or `linux/arm64`:
 
 ```text
-ghcr.io/thystra/jellyfin-hardened:10.11.11-awsec1
+ghcr.io/thystra/jellyfin-hardened:10.11.11-awsec2
 ```
 
 For Jellyfin 10.11.11 with PostgreSQL 17 client tools:

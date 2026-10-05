@@ -15,13 +15,13 @@ ghcr.io/thystra/jellyfin-hardened:10.11.11-awsec1
 For Jellyfin 10.11.11 with PostgreSQL 17 client tools:
 
 ```text
-ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec1-pg17
+ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec2-pg17
 ```
 
 For Jellyfin 10.11.11 with PostgreSQL 18 client tools:
 
 ```text
-ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec1-pg18
+ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec2-pg18
 ```
 
 All three tags are OCI multi-platform images for `linux/amd64` and `linux/arm64`; Docker or Podman selects the matching platform automatically.
@@ -29,6 +29,27 @@ All three tags are OCI multi-platform images for `linux/amd64` and `linux/arm64`
 The PostgreSQL variants use the same hardened FFmpeg build as the stock image. Their PostgreSQL client version is selected explicitly so Jellyfin.Pgsql backup and restore subprocesses use the requested `pg_dump`, `pg_restore`, and `psql` major version.
 
 ## Security patch levels
+
+### AWSEC2
+
+Jellyfin: 10.11.11  
+Jellyfin FFmpeg: 7.1.4-3+awsec1
+
+AWSEC2 is cumulative. It retains the AWSEC1 mitigation for **CVE-2026-8461** and
+backports the production changes from upstream Jellyfin PR
+[jellyfin/jellyfin#18278](https://github.com/jellyfin/jellyfin/pull/18278), which
+shipped in Jellyfin 12.2.
+
+The Jellyfin backport changes local-image timestamp comparisons to tolerate the
+precision loss introduced when PostgreSQL stores .NET timestamps at microsecond
+precision. This prevents an unchanged local image from being treated as modified
+solely because the stored timestamp has lower precision, avoiding the resulting
+unnecessary item saves and `ItemUpdated` events during no-change library scans.
+
+The backport is built from the exact Jellyfin v10.11.11 source commit
+`1fbd8739292cce610231be93daf43368733edf63`. CI requires the upstream patch to
+apply cleanly before building and records the source/backport provenance inside
+the image.
 
 ### AWSEC1
 
@@ -47,7 +68,7 @@ The PostgreSQL variants are based on the previously qualified `ghcr.io/rogly-net
 
 ## Architecture policy
 
-AWSEC1 is built and qualified for both `linux/amd64` and `linux/arm64`. Architecture is intentionally not encoded in the image tag; each release tag is a multi-platform OCI image.
+AWSEC2 is built and qualified for both `linux/amd64` and `linux/arm64`. Architecture is intentionally not encoded in the image tag; each release tag is a multi-platform OCI image.
 
 The architecture-specific hardened FFmpeg packages are selected during the image build and verified by SHA-256. CI also verifies that the installed Debian package architecture matches the target platform.
 
@@ -64,6 +85,7 @@ Pull requests build and qualify every image and architecture without publishing.
 The current CI verifies:
 
 - Jellyfin reports version 10.11.11 on amd64 and arm64;
+- the AWSEC2 source marker records the pinned v10.11.11 commit and upstream PR #18278 backport;
 - the exact `jellyfin-ffmpeg7` 7.1.4-3+awsec1 package is installed for the target architecture;
 - FFmpeg reports Jellyfin 7.1.4;
 - the MagicYUV decoder is absent;
@@ -77,11 +99,12 @@ The current CI verifies:
 ## Source layout
 
 ```text
-images/stock/Dockerfile   stock Jellyfin 10.11.11 + hardened FFmpeg
-images/pgsql/Dockerfile   parameterized PostgreSQL 17/18 client variants
-Dockerfile                compatibility entry point; defaults to PostgreSQL 18
+patches/jellyfin-10.11.11-pr18278.patch  upstream PR #18278 backport
+images/stock/Dockerfile                 stock Jellyfin 10.11.11 + AWSEC2 fixes
+images/pgsql/Dockerfile                 PostgreSQL 17/18 client variants + AWSEC2 fixes
+Dockerfile                              compatibility entry point; defaults to PostgreSQL 18
 ```
 
 ## Scope
 
-These images are security-maintained derivatives for specifically documented fixes. The project does **not** claim that every CVE reported against every package in the upstream image is fixed.
+These images are narrowly maintained derivatives for specifically documented security fixes and upstream bug-fix backports. The project does **not** claim that every CVE reported against every package in the upstream image is fixed.

@@ -27,3 +27,4 @@ diff --git a/MediaBrowser.Providers/Manager/ItemImageProvider.cs b/MediaBrowser.
 +                        if (Math.Abs((currentImage.DateModified - newDateModified).TotalSeconds) > 1 && (currentImage.Width > 0 || currentImage.Height > 0))
                          {
                              currentImage.Width = 0;
+                             currentImage.Height = 0;

@@ -32,7 +32,7 @@ jobs:
             pgsql: 'false'
             pg_major: 'none'
             oci_title: Hardened Jellyfin
-            oci_description: Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport
+            oci_description: 'Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport'
             oci_version: 10.11.11-awsec2
           - variant: pg17
             arch: amd64
@@ -40,7 +40,7 @@ jobs:
             pgsql: 'true'
             pg_major: '17'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools'
             oci_version: 10.11.11-awsec2-pg17
           - variant: pg18
             arch: amd64
@@ -48,7 +48,7 @@ jobs:
             pgsql: 'true'
             pg_major: '18'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools'
             oci_version: 10.11.11-awsec2-pg18
           - variant: stock
             arch: arm64
@@ -56,7 +56,7 @@ jobs:
             pgsql: 'false'
             pg_major: 'none'
             oci_title: Hardened Jellyfin
-            oci_description: Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport
+            oci_description: 'Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport'
             oci_version: 10.11.11-awsec2
           - variant: pg17
             arch: arm64
@@ -64,7 +64,7 @@ jobs:
             pgsql: 'true'
             pg_major: '17'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools'
             oci_version: 10.11.11-awsec2-pg17
           - variant: pg18
             arch: arm64
@@ -72,7 +72,7 @@ jobs:
             pgsql: 'true'
             pg_major: '18'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools'
             oci_version: 10.11.11-awsec2-pg18
 
     steps:

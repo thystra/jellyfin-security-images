@@ -1,0 +1,30 @@
+diff --git a/MediaBrowser.Controller/Entities/BaseItem.cs b/MediaBrowser.Controller/Entities/BaseItem.cs
+--- a/MediaBrowser.Controller/Entities/BaseItem.cs
++++ b/MediaBrowser.Controller/Entities/BaseItem.cs
+@@ -2245,8 +2245,9 @@
+                     if (existing.IsLocalFile)
+                     {
+                         var newDateModified = FileSystem.GetLastWriteTimeUtc(newImage);
+ 
+-                        // If date changed then we need to reset saved image dimensions
+-                        if (existing.DateModified != newDateModified && (existing.Width > 0 || existing.Height > 0))
++                        // If date changed then we need to reset saved image dimensions. Stores such as PostgreSQL keep
++                        // only microseconds, so an exact comparison would treat every unchanged image as modified.
++                        if (Math.Abs((existing.DateModified - newDateModified).TotalSeconds) > 1 && (existing.Width > 0 || existing.Height > 0))
+                         {
+                             existing.Width = 0;
+diff --git a/MediaBrowser.Providers/Manager/ItemImageProvider.cs b/MediaBrowser.Providers/Manager/ItemImageProvider.cs
+--- a/MediaBrowser.Providers/Manager/ItemImageProvider.cs
++++ b/MediaBrowser.Providers/Manager/ItemImageProvider.cs
+@@ -461,8 +461,9 @@
+                     {
+                         var newDateModified = _fileSystem.GetLastWriteTimeUtc(image.FileInfo);
+ 
+-                        // If date changed then we need to reset saved image dimensions
+-                        if (currentImage.DateModified != newDateModified && (currentImage.Width > 0 || currentImage.Height > 0))
++                        // If date changed then we need to reset saved image dimensions. Stores such as PostgreSQL keep
++                        // only microseconds, so an exact comparison would treat every unchanged image as modified.
++                        if (Math.Abs((currentImage.DateModified - newDateModified).TotalSeconds) > 1 && (currentImage.Width > 0 || currentImage.Height > 0))
+                         {
+                             currentImage.Width = 0;
+                             currentImage.Height = 0;

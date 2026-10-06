@@ -32,48 +32,48 @@ jobs:
             pgsql: 'false'
             pg_major: 'none'
             oci_title: Hardened Jellyfin
-            oci_description: Jellyfin 10.11.11 with the awsec1 FFmpeg security fix for CVE-2026-8461
-            oci_version: 10.11.11-awsec1
+            oci_description: 'Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport'
+            oci_version: 10.11.11-awsec2
           - variant: pg17
             arch: amd64
             dockerfile: images/pgsql/Dockerfile
             pgsql: 'true'
             pg_major: '17'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the awsec1 FFmpeg security fix for CVE-2026-8461 and PostgreSQL 17 client tools
-            oci_version: 10.11.11-awsec1-pg17
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools'
+            oci_version: 10.11.11-awsec2-pg17
           - variant: pg18
             arch: amd64
             dockerfile: images/pgsql/Dockerfile
             pgsql: 'true'
             pg_major: '18'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the awsec1 FFmpeg security fix for CVE-2026-8461 and PostgreSQL 18 client tools
-            oci_version: 10.11.11-awsec1-pg18
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools'
+            oci_version: 10.11.11-awsec2-pg18
           - variant: stock
             arch: arm64
             dockerfile: images/stock/Dockerfile
             pgsql: 'false'
             pg_major: 'none'
             oci_title: Hardened Jellyfin
-            oci_description: Jellyfin 10.11.11 with the awsec1 FFmpeg security fix for CVE-2026-8461
-            oci_version: 10.11.11-awsec1
+            oci_description: 'Jellyfin 10.11.11 with the AWSEC1 FFmpeg mitigation for CVE-2026-8461 and upstream PR #18278 image-date backport'
+            oci_version: 10.11.11-awsec2
           - variant: pg17
             arch: arm64
             dockerfile: images/pgsql/Dockerfile
             pgsql: 'true'
             pg_major: '17'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the awsec1 FFmpeg security fix for CVE-2026-8461 and PostgreSQL 17 client tools
-            oci_version: 10.11.11-awsec1-pg17
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 17 client tools'
+            oci_version: 10.11.11-awsec2-pg17
           - variant: pg18
             arch: arm64
             dockerfile: images/pgsql/Dockerfile
             pgsql: 'true'
             pg_major: '18'
             oci_title: Hardened Jellyfin PostgreSQL
-            oci_description: Jellyfin 10.11.11 PostgreSQL derivative with the awsec1 FFmpeg security fix for CVE-2026-8461 and PostgreSQL 18 client tools
-            oci_version: 10.11.11-awsec1-pg18
+            oci_description: 'Jellyfin 10.11.11 PostgreSQL derivative with the AWSEC1 FFmpeg mitigation for CVE-2026-8461, upstream PR #18278 backport, and PostgreSQL 18 client tools'
+            oci_version: 10.11.11-awsec2-pg18
 
     steps:
       - name: Checkout
@@ -112,6 +112,22 @@ jobs:
           docker run --rm --platform "linux/${ARCH}" --entrypoint /jellyfin/jellyfin "$IMAGE" --version > /tmp/jellyfin-version 2>&1 || true
           cat /tmp/jellyfin-version
           grep -Fx 'Jellyfin.Server 10.11.11.0' /tmp/jellyfin-version
+
+      - name: Qualify Jellyfin PR #18278 backport
+        env:
+          IMAGE: local/hardened-jellyfin:${{ matrix.variant }}-${{ matrix.arch }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          set -euxo pipefail
+          docker run --rm --platform "linux/${ARCH}" --entrypoint /bin/sh "$IMAGE" -c "
+            set -eu
+            test -f /jellyfin/MediaBrowser.Controller.dll
+            test -f /jellyfin/MediaBrowser.Providers.dll
+            test -f /usr/share/jellyfin-awsec/AWSEC2-SOURCE.txt
+            cat /usr/share/jellyfin-awsec/AWSEC2-SOURCE.txt
+            grep -Fx 'Jellyfin source commit: 1fbd8739292cce610231be93daf43368733edf63' /usr/share/jellyfin-awsec/AWSEC2-SOURCE.txt
+            grep -F 'Backport: jellyfin/jellyfin#18278' /usr/share/jellyfin-awsec/AWSEC2-SOURCE.txt
+          "
 
       - name: Qualify hardened FFmpeg
         env:
@@ -256,21 +272,21 @@ jobs:
           - variant: stock
             dockerfile: images/stock/Dockerfile
             image: ghcr.io/thystra/jellyfin-hardened
-            tags: ghcr.io/thystra/jellyfin-hardened:10.11.11-awsec1
+            tags: ghcr.io/thystra/jellyfin-hardened:10.11.11-awsec2
             pg_major: 'none'
-            oci_version: 10.11.11-awsec1
+            oci_version: 10.11.11-awsec2
           - variant: pg17
             dockerfile: images/pgsql/Dockerfile
             image: ghcr.io/thystra/jellyfin-pgsql-hardened
-            tags: ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec1-pg17
+            tags: ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec2-pg17
             pg_major: '17'
-            oci_version: 10.11.11-awsec1-pg17
+            oci_version: 10.11.11-awsec2-pg17
           - variant: pg18
             dockerfile: images/pgsql/Dockerfile
             image: ghcr.io/thystra/jellyfin-pgsql-hardened
-            tags: ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec1-pg18
+            tags: ghcr.io/thystra/jellyfin-pgsql-hardened:10.11.11-awsec2-pg18
             pg_major: '18'
-            oci_version: 10.11.11-awsec1-pg18
+            oci_version: 10.11.11-awsec2-pg18
 
     steps:
       - name: Checkout

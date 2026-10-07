@@ -51,6 +51,19 @@ The backport is built from the exact Jellyfin v10.11.11 source commit
 apply cleanly before building and records the source/backport provenance inside
 the image.
 
+#### Production validation
+
+On 2026-10-07, the AWSEC2 PostgreSQL 18 image was validated against a production
+Jellyfin library containing 52,140 live `BaseItems` rows. A no-change full
+library scan completed with **zero** PostgreSQL tuple-stat deltas for both
+`BaseItems` and `UserData`: no inserts, updates, deletes, or HOT updates were
+recorded across the scan.
+
+Before this backport, unchanged scans on the same deployment produced several
+thousand unnecessary `BaseItems` updates from timestamp-precision differences.
+The zero-update validation confirms that the PR #18278 backport eliminates that
+observed scan churn in the tested PostgreSQL deployment.
+
 ### AWSEC1
 
 Jellyfin: 10.11.11  
